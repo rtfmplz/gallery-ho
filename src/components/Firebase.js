@@ -18,9 +18,6 @@ class Firebase {
   constructor() {
     dotenv.config();
     firebase.initializeApp(config);
-
-    console.log(config.projectId)
-    console.log(config.appId)
   }
   
   getFireStoreageRef = () => {
