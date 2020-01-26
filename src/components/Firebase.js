@@ -1,5 +1,6 @@
 import firebase from 'firebase/app';
 import "firebase/storage"
+import "firebase/firestore"
 
 import dotenv from "dotenv";
 
@@ -22,6 +23,10 @@ class Firebase {
   
   getFireStoreageRef = () => {
     return firebase.storage().ref();
+  }
+
+  getFireStore = () => {
+    return firebase.firestore();
   }
 }
 
