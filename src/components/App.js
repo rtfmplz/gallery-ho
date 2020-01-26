@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import Movie from './Movie';
+import Art from './Art';
 import Artist from './Artist';
 import axios from 'axios';
 import Firebase from './Firebase';
@@ -31,8 +31,6 @@ import Firebase from './Firebase';
  *    componentWillUnmount(): Component가 Destroy된 후 호출된다.
  */
 
-const MOVIE_LIST = "https://yts-proxy.now.sh/list_movies.json?sort_by=rating";
-
 class App extends React.Component {
 
   // state는 React Component 안의 object
@@ -47,19 +45,25 @@ class App extends React.Component {
     this.db = this.fire.getFireStore();
   }
 
-  _getMovies = async () => {
+  _getArts = async (id) => {
     // await 키워드는 async 함수 내에서만 사용될 수 있으며 동기적으로 프로미스를 기다릴 수 있도록 해준다.
     // 만약 async 밖에서 프로미스를 사용하면 여전히 then 콜백을 사용해야 한다.
-    const {
-      data: {
-        data: { movies }
-      }
-    } = await axios.get(
-      "https://yts-proxy.now.sh/list_movies.json?sort_by=rating"
-    );
-    // setState()를 이용해야 lifeCycle 함수들이 호출, render()가 호출된다.
+    const docRef = this.db.collection(id)
+    const arts = await docRef.get().then(function(querySnapshot) {
+      return querySnapshot.docs.map(function(doc) {
+        // doc.data() is never undefined for query doc snapshots
+        // console.log(doc.data().img);
+        return doc.data();
+      })
+    });
+  
+    arts.forEach( async (art) => {
+      art.photo = await this.storageRef.child(`${art.img}`).getDownloadURL();
+    })
+
+    // // setState()를 이용해야 lifeCycle 함수들이 호출, render()가 호출된다.
     this.setState({
-      movies
+      arts
     })
   }
 
@@ -69,31 +73,24 @@ class App extends React.Component {
       if (doc.exists) {
         return doc.data();
       } else {
-          // doc.data() will be undefined in this case
-          console.log("No such document!");
+        // doc.data() will be undefined in this case
+        console.log("No such document!");
       }
     }).catch(function(error) {
         console.log("Error getting document:", error);
     });
 
-    const photo = await this.storageRef.child(`/Artist/${id}.JPG`).getDownloadURL();
-    artist.photo = photo
+    artist.photo = await this.storageRef.child(`/Artist/${id}.JPG`).getDownloadURL();
+
     this.setState({
       artist
     })
     
   }
 
-  _getPoster = async (id) => {
-    const poster_url = await this.storageRef.child(`/${id}/0001.jpg`).getDownloadURL();
-    this.setState({
-      poster_url
-    })
-  }
 
   componentDidMount() {
-    this._getMovies();
-    this._getPoster("1");
+    this._getArts("1");
     this._getArtist("1");
   }
 
@@ -108,32 +105,27 @@ class App extends React.Component {
     />
   }
 
-  _renderMovies = () => {
-    const movies = this.state.movies.map( movie => {
+  _renderArts = () => {
+    const arts = this.state.arts.map( art => {
       // 엘리먼트가 많은 경우 key를 넣어 줘야 함
-      return < Movie 
-        key={movie.id}
-        title={movie.title_english}
-        poster={this.state.poster_url}
-        genres={movie.genres}
-        synopsis={movie.synopsis}
-        />
+      return < Art 
+        photo={art.photo}
+      />
     })
-    return movies
+    return arts
   }
 
   render() {
-    const { movies } = this.state;
+    const { arts } = this.state;
     const { artist } = this.state;
-    const { poster_url } = this.state;
 
     return (
       <div>
-        <div className={poster_url ? "App" : "App--loading"}>
+        <div className={artist ? "App" : "App--loading"}>
           {artist ? this._renderArtist() : "..."}
         </div>
-        <div className={poster_url ? "App" : "App--loading"}>
-          {movies ? this._renderMovies() : "Loading..."}
+        <div className={arts ? "App" : "App--loading"}>
+          {arts ? this._renderArts() : "Loading..."}
         </div>
       </div>
     );

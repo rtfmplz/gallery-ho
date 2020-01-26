@@ -1,7 +1,6 @@
 import React from 'react';
 import './Artist.css';
 import PropTypes from 'prop-types';
-import LinesEllipsis from 'react-lines-ellipsis'
 
 
 /**
