@@ -52,14 +52,18 @@ class App extends React.Component {
     const arts = await docRef.get().then(function(querySnapshot) {
       return querySnapshot.docs.map(function(doc) {
         // doc.data() is never undefined for query doc snapshots
-        // console.log(doc.data().img);
         return doc.data();
       })
     });
-  
-    arts.forEach( async (art) => {
+
+    // @see https://medium.com/@trustyoo86/async-await%EB%A5%BC-%EC%9D%B4%EC%9A%A9%ED%95%9C-%EB%B9%84%EB%8F%99%EA%B8%B0-loop-%EB%B3%91%EB%A0%AC%EB%A1%9C-%EC%88%9C%EC%B0%A8-%EC%B2%98%EB%A6%AC%ED%95%98%EA%B8%B0-315f31b72ccc
+    // arts.forEach( async (art) => {
+    //   art.photo = await this.storageRef.child(`${art.img}`).getDownloadURL();
+    // })
+
+    for (const art of arts){
       art.photo = await this.storageRef.child(`${art.img}`).getDownloadURL();
-    })
+    }
 
     // // setState()를 이용해야 lifeCycle 함수들이 호출, render()가 호출된다.
     this.setState({
@@ -88,7 +92,6 @@ class App extends React.Component {
     
   }
 
-
   componentDidMount() {
     this._getArts("1");
     this._getArtist("1");
@@ -108,9 +111,11 @@ class App extends React.Component {
   _renderArts = () => {
     const arts = this.state.arts.map( art => {
       // 엘리먼트가 많은 경우 key를 넣어 줘야 함
-      return < Art 
-        photo={art.photo}
-      />
+      if(art.photo){
+        return < Art 
+          photo={art.photo}
+        />
+      }
     })
     return arts
   }
