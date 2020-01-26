@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 import Movie from './Movie';
+import Artist from './Artist';
 import axios from 'axios';
 import Firebase from './Firebase';
 
@@ -43,6 +44,7 @@ class App extends React.Component {
     super(props);
     this.fire = new Firebase();
     this.storageRef = this.fire.getFireStoreageRef();
+    this.db = this.fire.getFireStore();
   }
 
   _getMovies = async () => {
@@ -61,8 +63,29 @@ class App extends React.Component {
     })
   }
 
-  _getPoster = async () => {
-    const poster_url = await this.storageRef.child("/Img0047.jpg").getDownloadURL();
+  _getArtist = async (id) => {
+    const docRef = this.db.collection("Artist").doc(id)
+    const artist = await docRef.get().then(function(doc) {
+      if (doc.exists) {
+        return doc.data();
+      } else {
+          // doc.data() will be undefined in this case
+          console.log("No such document!");
+      }
+    }).catch(function(error) {
+        console.log("Error getting document:", error);
+    });
+
+    const photo = await this.storageRef.child(`/Artist/${id}.JPG`).getDownloadURL();
+    artist.photo = photo
+    this.setState({
+      artist
+    })
+    
+  }
+
+  _getPoster = async (id) => {
+    const poster_url = await this.storageRef.child(`/${id}/0001.jpg`).getDownloadURL();
     this.setState({
       poster_url
     })
@@ -70,7 +93,19 @@ class App extends React.Component {
 
   componentDidMount() {
     this._getMovies();
-    this._getPoster();
+    this._getPoster("1");
+    this._getArtist("1");
+  }
+
+  _renderArtist = () => {
+    const artist = this.state.artist;
+    return < Artist 
+      name={artist.name}
+      email={artist.email}
+      phone={artist.phone}
+      description={artist.description}
+      photo={artist.photo}
+    />
   }
 
   _renderMovies = () => {
@@ -89,9 +124,17 @@ class App extends React.Component {
 
   render() {
     const { movies } = this.state;
+    const { artist } = this.state;
+    const { poster_url } = this.state;
+
     return (
-      <div className={movies ? "App" : "App--loading"}>
-        {movies ? this._renderMovies() : "Loading..."}
+      <div>
+        <div className={poster_url ? "App" : "App--loading"}>
+          {artist ? this._renderArtist() : "..."}
+        </div>
+        <div className={poster_url ? "App" : "App--loading"}>
+          {movies ? this._renderMovies() : "Loading..."}
+        </div>
       </div>
     );
   }
