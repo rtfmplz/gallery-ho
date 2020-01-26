@@ -1,5 +1,5 @@
 {
-  "name": "react-movie-app",
+  "name": "gallery-ho",
   "version": "0.2.0",
   "private": true,
   "dependencies": {
@@ -16,6 +16,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "serve": "react-scripts build && firebase serve",
     "deploy": "react-scripts build && firebase deploy"
   },
   "browserslist": {
