@@ -17,7 +17,7 @@ const config = {
 
 class Firebase {
   constructor() {
-    dotenv.config();
+    // dotenv.config();
     firebase.initializeApp(config);
   }
   
