@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
  *    - render(), update 등 LifeCycle이 필요없는 component
  *    - just return JSX(html) code
  */
-function Artist({name, email, phone, description, photo}) {
+function Artist({name, email, description, photo}) {
   return (
     // className == class in HTML
     <div className = "Artist">
@@ -20,7 +20,6 @@ function Artist({name, email, phone, description, photo}) {
         <h1>{name.kor} ({name.eng})</h1>
         <div className = "Artist__Infos">
           <div className = "Artist__Info">email: {email}</div>
-          <div className = "Artist__Info">phone: {phone}</div>
         </div>
         <div className = "Artist__Desc">
           {description}

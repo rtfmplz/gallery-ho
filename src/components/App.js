@@ -101,7 +101,6 @@ class App extends React.Component {
     return < Artist 
       name={artist.name}
       email={artist.email}
-      phone={artist.phone}
       description={artist.description}
       photo={artist.photo}
     />
@@ -109,11 +108,11 @@ class App extends React.Component {
 
   _renderArts = () => {
     const arts = this.state.arts
-    .filter( art => art.photo.exists)
     .map( art => {
       // 엘리먼트가 많은 경우 key를 넣어 줘야 함
       return < Art 
           photo={art.photo}
+          name={art.name}
         />
     })
     return arts
