@@ -2,7 +2,6 @@ import React from 'react';
 import './App.css';
 import Art from './Art';
 import Artist from './Artist';
-import axios from 'axios';
 import Firebase from './Firebase';
 
 
@@ -109,13 +108,13 @@ class App extends React.Component {
   }
 
   _renderArts = () => {
-    const arts = this.state.arts.map( art => {
+    const arts = this.state.arts
+    .filter( art => art.photo.exists)
+    .map( art => {
       // 엘리먼트가 많은 경우 key를 넣어 줘야 함
-      if(art.photo){
-        return < Art 
+      return < Art 
           photo={art.photo}
         />
-      }
     })
     return arts
   }

@@ -9,12 +9,12 @@ import PropTypes from 'prop-types';
  *    - render(), update 등 LifeCycle이 필요없는 component
  *    - just return JSX(html) code
  */
-function Art({photo}) {
+function Art({photo, name}) {
   return (
     // className == class in HTML
     <div className = "Art">
       <div className = "Art__Column">
-        <ArtPhoto photo={photo}/>
+        <ArtPhoto photo={photo} name={name}/>
       </div>
       <div className = "Art__Column">
       </div>
@@ -22,9 +22,9 @@ function Art({photo}) {
   );
 }
 
-function ArtPhoto({photo}) {
+function ArtPhoto({photo, name}) {
   return (
-    <img src={photo} className="Art__Photo" />
+    <img src={photo} className="Art__Photo" alt={name}/>
   );
 }
 
